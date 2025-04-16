@@ -1,189 +1,145 @@
 <!DOCTYPE html>
-<html>
-  <head>
-    <meta charset="UTF-8" />
-    <meta
-      name="viewport"
-      content="width=device-width, initial-scale=1, shrink-to-fit=no"
-    />
-    <title>Delivery Capture</title>
-    <!-- Bootstrap CSS -->
-    <link
-      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
-      rel="stylesheet"
-    />
-    <!-- Google Fonts -->
-    <link
-      href="https://fonts.googleapis.com/css?family=Roboto:400,500,700&display=swap"
-      rel="stylesheet"
-    />
-    <!-- Signature Pad Library -->
-    <script
-      src="https://cdn.jsdelivr.net/npm/signature_pad@4.0.0/dist/signature_pad.umd.min.js"
-      defer
-    ></script>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+  <title>Delivery Capture</title>
 
-    <style>
-      /* =======================
-         Base & Typography
-      ========================= */
-      body {
-        font-family: "Roboto", sans-serif;
-        /* Subtle gradient background moving from white to a light peach hue */
-        background: linear-gradient(180deg, #ffffff 0%, #fcefe9 100%);
-        margin: 0;
-        padding: 0;
-      }
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
 
-      .container {
-        margin-top: 20px;
-        margin-bottom: 20px;
-      }
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css?family=Roboto:400,500,700&display=swap" rel="stylesheet" />
 
-      /* =======================
-         Card & Layout
-      ========================= */
-      .card {
-        border: none;
-        border-radius: 10px;
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-      }
+  <!-- Signature Pad -->
+  <script src="https://cdn.jsdelivr.net/npm/signature_pad@4.0.0/dist/signature_pad.umd.min.js" defer></script>
 
-      /* Update the header background to match the client’s primary orange color */
-      .card-header {
-        background-color: #f95c1c; /* Adjust if you have a different hex code */
-        color: #fff;
-        border-top-left-radius: 10px;
-        border-top-right-radius: 10px;
-        text-align: center;
-        font-size: 1.25rem;
-      }
+  <style>
+    body {
+      font-family: "Roboto", sans-serif;
+      background: linear-gradient(180deg, #ffffff 0%, #fcefe9 100%);
+      margin: 0;
+      padding: 0;
+    }
 
-      /* =======================
-         Buttons & Colors
-      ========================= */
-      /* Custom button class to replace default Bootstrap colors with brand color */
-      .btn-brand {
-        background-color: #f95c1c; /* Primary brand color */
-        border-color: #f95c1c;
-        color: #fff;
-      }
-      .btn-brand:hover,
-      .btn-brand:focus {
-        background-color: #e04c14; /* Darken slightly on hover */
-        border-color: #e04c14;
-        color: #fff;
-      }
+    .container {
+      margin-top: 20px;
+      margin-bottom: 20px;
+    }
 
-      /* Secondary button style for “Clear Signature” or neutral actions */
-      .btn-secondary-custom {
-        background-color: #e5e5e5;
-        border-color: #dcdcdc;
-        color: #333;
-      }
-      .btn-secondary-custom:hover,
-      .btn-secondary-custom:focus {
-        background-color: #dcdcdc;
-        border-color: #cccccc;
-        color: #333;
-      }
+    .card {
+      border: none;
+      border-radius: 10px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
 
-      /* =======================
-         Photo Preview & Canvas
-      ========================= */
-      .preview-img {
-        width: 100px;
-        height: auto;
-        margin: 5px;
-        border-radius: 5px;
-        object-fit: cover;
-        border: 2px solid #ddd;
-      }
+    .card-header {
+      background-color: #f95c1c;
+      color: #fff;
+      border-top-left-radius: 10px;
+      border-top-right-radius: 10px;
+      text-align: center;
+      font-size: 1.25rem;
+    }
 
-      #signatureCanvas {
-        background-color: #ffffff;
-        border: 1px solid #ced4da;
-        border-radius: 5px;
-        width: 100%;
-        height: 250px;
-      }
-    </style>
-  </head>
-  <body>
-    <div class="container">
-      <div class="card">
-        <div class="card-header">Delivery Capture</div>
-        <div class="card-body">
-          <!-- Referral Info -->
-          <div id="referralInfo" class="mb-3"></div>
+    .btn-brand {
+      background-color: #f95c1c;
+      border-color: #f95c1c;
+      color: #fff;
+    }
 
-          <!-- Photo Upload Section -->
-          <div class="mb-4">
-            <h5>Upload Photos (up to 3)</h5>
-            <input
-              type="file"
-              id="photoInput"
-              accept="image/*"
-              multiple
-              class="form-control"
-            />
-            <div id="photoPreview" class="d-flex flex-wrap mt-3"></div>
-          </div>
+    .btn-brand:hover,
+    .btn-brand:focus {
+      background-color: #e04c14;
+      border-color: #e04c14;
+    }
 
-          <!-- Geolocation Section -->
-          <div class="mb-4">
-            <h5>Your Location</h5>
-            <button id="locationButton" class="btn btn-brand mb-2">
-              Get Location
-            </button>
-            <p id="locationDisplay" class="form-control-plaintext">
-              Location not captured yet.
-            </p>
-          </div>
+    .btn-secondary-custom {
+      background-color: #e5e5e5;
+      border-color: #dcdcdc;
+      color: #333;
+    }
 
-          <!-- Signature Section -->
-          <div class="mb-4">
-            <h5>Signature</h5>
-            <canvas id="signatureCanvas"></canvas>
-            <button id="clearSignature" class="btn btn-secondary-custom btn-sm mt-2">
-              Clear Signature
-            </button>
-          </div>
+    .btn-secondary-custom:hover,
+    .btn-secondary-custom:focus {
+      background-color: #dcdcdc;
+      border-color: #cccccc;
+    }
 
-          <!-- Submit Button -->
-          <div class="text-center">
-            <button id="submitButton" class="btn btn-brand">
-              Complete
-            </button>
-          </div>
+    .preview-img {
+      width: 100px;
+      height: auto;
+      margin: 5px;
+      border-radius: 5px;
+      object-fit: cover;
+      border: 2px solid #ddd;
+    }
+
+    #signatureCanvas {
+      background-color: #ffffff;
+      border: 1px solid #ced4da;
+      border-radius: 5px;
+      width: 100%;
+      height: 250px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="card">
+      <div class="card-header">Delivery Capture</div>
+      <div class="card-body">
+        <!-- Referral Info -->
+        <div id="referralInfo" class="mb-3"></div>
+
+        <!-- Photo Upload -->
+        <div class="mb-4">
+          <h5>Upload Photos (up to 3)</h5>
+          <input type="file" id="photoInput" accept="image/*" multiple class="form-control" />
+          <div id="photoPreview" class="d-flex flex-wrap mt-3"></div>
+        </div>
+
+        <!-- Geolocation -->
+        <div class="mb-4">
+          <h5>Your Location</h5>
+          <button id="locationButton" class="btn btn-brand mb-2">Get Location</button>
+          <p id="locationDisplay" class="form-control-plaintext">Location not captured yet.</p>
+        </div>
+
+        <!-- Signature -->
+        <div class="mb-4">
+          <h5>Signature</h5>
+          <canvas id="signatureCanvas"></canvas>
+          <button id="clearSignature" class="btn btn-secondary-custom btn-sm mt-2">Clear Signature</button>
+        </div>
+
+        <!-- Submit -->
+        <div class="text-center">
+          <button id="submitButton" class="btn btn-brand">Complete</button>
         </div>
       </div>
     </div>
+  </div>
 
-    <!-- Bootstrap Bundle with Popper -->
-    <script
-      src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"
-      defer
-    ></script>
+  <!-- Bootstrap JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" defer></script>
 
-    <script>
-      // =============================
-      // 1. Query Parameter Parsing
-      // =============================
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      // Query Params
       function getQueryParams() {
-        let params = {};
-        let queryString = window.location.search.substring(1);
-        let regex = /([^&=]+)=([^&]*)/g;
-        let m;
-        while ((m = regex.exec(queryString))) {
-          params[decodeURIComponent(m[1])] = decodeURIComponent(m[2]);
-        }
+        const params = {};
+        const query = window.location.search.substring(1);
+        query.split("&").forEach(part => {
+          const [key, value] = part.split("=");
+          if (key) params[decodeURIComponent(key)] = decodeURIComponent(value || "");
+        });
         return params;
       }
 
       const params = getQueryParams();
       const referralInfoDiv = document.getElementById("referralInfo");
-      if (Object.keys(params).length > 0) {
+      if (params.mobile || params.project || params.stop) {
         referralInfoDiv.innerHTML = `
           <p><strong>Referral Info:</strong></p>
           <p>Mobile: ${params.mobile || "N/A"}</p>
@@ -192,71 +148,49 @@
         `;
       }
 
-      // =============================
-      // 2. Photo Upload Handling
-      // =============================
+      // Photo Upload
       const photoInput = document.getElementById("photoInput");
       const photoPreviewDiv = document.getElementById("photoPreview");
-
-      photoInput.addEventListener("change", function () {
+      photoInput.addEventListener("change", () => {
         photoPreviewDiv.innerHTML = "";
         const files = photoInput.files;
-
         if (files.length > 3) {
           alert("You can upload up to 3 photos only.");
-          photoInput.value = ""; // Reset file input
+          photoInput.value = "";
           return;
         }
-
-        for (let i = 0; i < files.length; i++) {
-          const file = files[i];
+        Array.from(files).forEach(file => {
           const reader = new FileReader();
-          reader.onload = function (e) {
+          reader.onload = e => {
             const img = document.createElement("img");
             img.src = e.target.result;
             img.className = "preview-img";
             photoPreviewDiv.appendChild(img);
           };
           reader.readAsDataURL(file);
-        }
+        });
       });
 
-      // =============================
-      // 3. Geolocation Handling
-      // =============================
+      // Location
       const locationButton = document.getElementById("locationButton");
       const locationDisplay = document.getElementById("locationDisplay");
       let capturedLocation = null;
-
-      locationButton.addEventListener("click", function () {
-        if (navigator.geolocation) {
-          navigator.geolocation.getCurrentPosition(
-            function (position) {
-              capturedLocation = {
-                latitude: position.coords.latitude,
-                longitude: position.coords.longitude,
-              };
-              locationDisplay.innerText =
-                "Lat: " +
-                capturedLocation.latitude.toFixed(5) +
-                ", Lon: " +
-                capturedLocation.longitude.toFixed(5);
-            },
-            function (error) {
-              alert("Error getting location: " + error.message);
-            }
-          );
-        } else {
-          alert("Geolocation is not supported by this browser.");
-        }
+      locationButton.addEventListener("click", () => {
+        navigator.geolocation.getCurrentPosition(
+          position => {
+            capturedLocation = {
+              latitude: position.coords.latitude,
+              longitude: position.coords.longitude,
+            };
+            locationDisplay.innerText = `Lat: ${capturedLocation.latitude.toFixed(5)}, Lon: ${capturedLocation.longitude.toFixed(5)}`;
+          },
+          error => alert("Error getting location: " + error.message)
+        );
       });
 
-      // =============================
-      // 4. Signature Pad Setup
-      // =============================
+      // Signature Pad
       const canvas = document.getElementById("signatureCanvas");
       const signaturePad = new SignaturePad(canvas);
-
       function resizeCanvas() {
         const ratio = Math.max(window.devicePixelRatio || 1, 1);
         canvas.width = canvas.offsetWidth * ratio;
@@ -266,90 +200,54 @@
       }
       window.addEventListener("resize", resizeCanvas);
       resizeCanvas();
+      document.getElementById("clearSignature").addEventListener("click", () => signaturePad.clear());
 
-      const clearButton = document.getElementById("clearSignature");
-      clearButton.addEventListener("click", function () {
-        signaturePad.clear();
+      // Submit
+      const submitButton = document.getElementById("submitButton");
+      submitButton.addEventListener("click", async () => {
+        if (photoInput.files.length === 0 && !confirm("No photos uploaded. Proceed anyway?")) return;
+        if (!capturedLocation && !confirm("Location not captured. Proceed anyway?")) return;
+        if (signaturePad.isEmpty() && !confirm("Signature is empty. Proceed anyway?")) return;
+
+        const formData = new FormData();
+        for (const key in params) formData.append(key, params[key]);
+        Array.from(photoInput.files).forEach((file, i) => formData.append(`photo${i + 1}`, file));
+        if (capturedLocation) {
+          formData.append("latitude", capturedLocation.latitude);
+          formData.append("longitude", capturedLocation.longitude);
+        }
+        if (!signaturePad.isEmpty()) {
+          const dataURL = signaturePad.toDataURL("image/png");
+          formData.append("signature", dataURLtoBlob(dataURL), "signature.png");
+        }
+
+        submitButton.disabled = true;
+        submitButton.innerText = "Submitting...";
+
+        try {
+          const response = await fetch("https://goswat.onrender.com/api/submitDelivery", {
+            method: "POST",
+            body: formData,
+          });
+          if (!response.ok) throw new Error(`Error ${response.status}`);
+          alert("✅ Submission successful!");
+        } catch (err) {
+          alert("❌ Submission failed: " + err.message);
+        } finally {
+          submitButton.disabled = false;
+          submitButton.innerText = "Complete";
+        }
       });
 
-      // =============================
-      // 5. Submission Handling
-      // =============================
-      const submitButton = document.getElementById("submitButton");
-      submitButton.addEventListener("click", async function () {
-  // Validate inputs
-  if (photoInput.files.length === 0) {
-    if (!confirm("No photos uploaded. Proceed anyway?")) return;
-  }
-  if (!capturedLocation) {
-    if (!confirm("Location not captured. Proceed without location?")) return;
-  }
-  if (signaturePad.isEmpty()) {
-    if (!confirm("Signature is empty. Proceed without a signature?")) return;
-  }
-
-  // Assemble all data into FormData
-  const formData = new FormData();
-
-  // Include query params
-  for (const key in params) {
-    formData.append(key, params[key]);
-  }
-
-  // Photo files
-  for (let i = 0; i < photoInput.files.length; i++) {
-    formData.append("photo" + (i + 1), photoInput.files[i]);
-  }
-
-  // Location
-  if (capturedLocation) {
-    formData.append("latitude", capturedLocation.latitude);
-    formData.append("longitude", capturedLocation.longitude);
-  }
-
-  // Signature as image blob (not base64 string)
-  if (!signaturePad.isEmpty()) {
-    const dataURL = signaturePad.toDataURL("image/png");
-    const blob = dataURLtoBlob(dataURL);
-    formData.append("signature", blob, "signature.png");
-  }
-
-  // Disable button during submission
-  submitButton.disabled = true;
-  submitButton.innerText = "Submitting...";
-
-  try {
-    const response = await fetch("https://goswat.onrender.com/api/submitDelivery", {
-      method: "POST",
-      body: formData,
+      function dataURLtoBlob(dataURL) {
+        const [meta, base64] = dataURL.split(",");
+        const mime = meta.match(/:(.*?);/)[1];
+        const binary = atob(base64);
+        const array = new Uint8Array(binary.length);
+        for (let i = 0; i < binary.length; i++) array[i] = binary.charCodeAt(i);
+        return new Blob([array], { type: mime });
+      }
     });
-
-    if (!response.ok) throw new Error("Server returned " + response.status);
-
-    const result = await response.json();
-    console.log("✅ Success:", result);
-    alert("✅ Submission successful!");
-  } catch (error) {
-    console.error("❌ Submission error:", error);
-    alert("❌ Submission failed: " + error.message);
-  } finally {
-    submitButton.disabled = false;
-    submitButton.innerText = "Complete";
-  }
-});
-
-// Helper to convert dataURL to Blob
-function dataURLtoBlob(dataURL) {
-  const parts = dataURL.split(",");
-  const mime = parts[0].match(/:(.*?);/)[1];
-  const bstr = atob(parts[1]);
-  let n = bstr.length;
-  const u8arr = new Uint8Array(n);
-  while (n--) {
-    u8arr[n] = bstr.charCodeAt(n);
-  }
-  return new Blob([u8arr], { type: mime });
-}
-    </script>
-  </body>
+  </script>
+</body>
 </html>
