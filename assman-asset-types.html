@@ -1,0 +1,573 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AssMan - Asset Types Management</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        .sidebar-item.active {
+            background-color: rgba(59, 130, 246, 0.1);
+            border-left: 3px solid #3b82f6;
+        }
+        .attribute-item:hover .attribute-actions {
+            display: flex;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 flex h-screen">
+    <!-- Sidebar (same as previous page) -->
+    <div class="w-64 bg-white shadow-md flex flex-col h-full">
+        <div class="p-4 flex items-center border-b">
+            <div class="bg-blue-500 text-white h-10 w-10 rounded-md flex items-center justify-center">
+                <svg baseProfile="full" height="100%" version="1.1" viewBox="0 0 200 200" width="100%" xmlns="http://www.w3.org/2000/svg" xmlns:ev="http://www.w3.org/2001/xml-events" xmlns:xlink="http://www.w3.org/1999/xlink"><defs /><path d="M100,60 C60,60 55,100 100,130 C145,100 140,60 100,60 Z" fill="none" stroke="white" stroke-linecap="round" stroke-linejoin="round" stroke-width="8" /><path d="M100,60 C90,80 90,110 100,120" fill="none" stroke="white" stroke-linecap="round" stroke-linejoin="round" stroke-width="8" /><path d="M80,130 Q70,140 70,150 L70,160 L130,160 L130,150 Q130,140 120,130" fill="none" stroke="white" stroke-linecap="round" stroke-linejoin="round" stroke-width="8" /></svg>
+            </div>
+            <span class="ml-3 font-bold text-xl">AssMan</span>
+        </div>
+        
+        <div class="p-4 border-b">
+            <div class="text-sm uppercase text-gray-500 font-semibold">Asset Management</div>
+        </div>
+        
+        <div class="flex-1 overflow-y-auto">
+            <div class="sidebar-item p-4 flex items-center text-gray-700 hover:bg-gray-50">
+                <i class="fas fa-th-large w-5"></i>
+                <span class="ml-3" onclick="window.location.href='assman-mockup.html'">Dashboard</span>
+            </div>
+            <div class="sidebar-item active p-4 flex items-center text-blue-600 cursor-pointer" id="asset-catalog-toggle">
+                <i class="fas fa-list-ul w-5"></i>
+                <span class="ml-3">Asset Catalog</span>
+                <i class="fas fa-chevron-down ml-auto text-xs text-gray-400"></i>
+            </div>
+            <div id="asset-catalog-items">
+                <div class="sidebar-item p-3 pl-12 flex items-center text-gray-700 hover:bg-gray-50">
+                    <i class="fas fa-box w-5 text-sm"></i>
+                    <span class="ml-2 text-sm">Software Licenses</span>
+                </div>
+                <div class="sidebar-item p-3 pl-12 flex items-center text-gray-700 hover:bg-gray-50">
+                    <i class="fas fa-door-open w-5 text-sm"></i>
+                    <span class="ml-2 text-sm">Meeting Rooms</span>
+                </div>
+                <div class="sidebar-item p-3 pl-12 flex items-center text-gray-700 hover:bg-gray-50">
+                    <i class="fas fa-file-contract w-5 text-sm"></i>
+                    <span class="ml-2 text-sm">Contracts</span>
+                </div>
+            </div>
+            
+            <div class="p-4 border-t border-b">
+                <div class="text-sm uppercase text-gray-500 font-semibold">Tools</div>
+            </div>
+            
+            <div class="sidebar-item p-4 flex items-center text-gray-700 hover:bg-gray-50">
+                <i class="fas fa-chart-bar w-5"></i>
+                <span class="ml-3">Reports</span>
+            </div>
+            <div class="sidebar-item p-4 flex items-center text-gray-700 hover:bg-gray-50">
+                <i class="fas fa-cog w-5"></i>
+                <span class="ml-3">Settings</span>
+            </div>
+        </div>
+        
+        <div class="p-4 border-t">
+            <button class="w-full flex items-center justify-center bg-gray-200 p-2 rounded-md text-gray-700 hover:bg-gray-300">
+                <i class="fas fa-sign-out-alt mr-2"></i> Logout
+            </button>
+        </div>
+    </div>
+    
+    <!-- Main Content -->
+    <div class="flex-1 flex flex-col overflow-hidden">
+        <!-- Top Navigation -->
+        <div class="bg-white border-b p-4 flex items-center justify-between">
+            <div class="flex items-center">
+                <button class="mr-4 text-gray-500">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <h1 class="text-xl font-semibold">Asset Types</h1>
+            </div>
+            
+            <div class="flex items-center">
+                <div class="relative mr-4">
+                    <input type="text" placeholder="Search..." class="pl-10 pr-4 py-2 border rounded-md w-64">
+                    <i class="fas fa-search absolute left-3 top-3 text-gray-400"></i>
+                </div>
+                
+                <button class="bg-gray-200 p-2 rounded-full text-gray-700 mr-2">
+                    <i class="fas fa-bell"></i>
+                </button>
+                
+                <div class="flex items-center">
+                    <div class="h-8 w-8 bg-gray-200 rounded-full flex items-center justify-center">
+                        <i class="fas fa-user text-gray-500"></i>
+                    </div>
+                    <span class="ml-2 text-gray-700">John Smith</span>
+                    <i class="fas fa-chevron-down ml-2 text-gray-500 text-xs"></i>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Content Area -->
+        <div class="flex-1 overflow-y-auto p-6">
+            <!-- Action Bar -->
+            <div class="flex justify-between mb-6">
+                <div>
+                    <h2 class="text-lg font-semibold text-gray-700">Manage Asset Types</h2>
+                    <p class="text-sm text-gray-500">Create and configure asset types for your organization</p>
+                </div>
+                <div>
+                    <button class="bg-blue-600 text-white px-4 py-2 rounded-md flex items-center">
+                        <i class="fas fa-plus mr-2"></i> Create New Asset Type
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Asset Types Cards -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+                <!-- Software Licenses Asset Type -->
+                <div class="bg-white rounded-md shadow-sm p-5 border">
+                    <div class="flex items-start justify-between mb-4">
+                        <div class="flex items-center">
+                            <div class="bg-blue-100 p-3 rounded-md">
+                                <i class="fas fa-box text-blue-600 text-xl"></i>
+                            </div>
+                            <div class="ml-4">
+                                <h3 class="font-semibold text-lg">Software Licenses</h3>
+                                <p class="text-sm text-gray-500">Manage software subscriptions and licenses</p>
+                            </div>
+                        </div>
+                        <div class="flex">
+                            <button class="text-gray-400 hover:text-gray-600">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button class="text-gray-400 hover:text-red-600 ml-3">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <div class="text-sm font-medium text-gray-700 mb-2">Attributes</div>
+                        <div class="space-y-2 mb-3">
+                            <div class="flex items-center justify-between py-2 px-3 bg-gray-50 rounded text-sm attribute-item">
+                                <div>License Type</div>
+                                <div class="text-gray-500">Text / Required</div>
+                                <div class="attribute-actions hidden">
+                                    <button class="text-gray-400 hover:text-gray-600 mr-2"><i class="fas fa-edit text-xs"></i></button>
+                                    <button class="text-gray-400 hover:text-red-600"><i class="fas fa-times text-xs"></i></button>
+                                </div>
+                            </div>
+                            <div class="flex items-center justify-between py-2 px-3 bg-gray-50 rounded text-sm attribute-item">
+                                <div>Seats</div>
+                                <div class="text-gray-500">Number / Required</div>
+                                <div class="attribute-actions hidden">
+                                    <button class="text-gray-400 hover:text-gray-600 mr-2"><i class="fas fa-edit text-xs"></i></button>
+                                    <button class="text-gray-400 hover:text-red-600"><i class="fas fa-times text-xs"></i></button>
+                                </div>
+                            </div>
+                            <div class="flex items-center justify-between py-2 px-3 bg-gray-50 rounded text-sm attribute-item">
+                                <div>Expiry Date</div>
+                                <div class="text-gray-500">Date / Required</div>
+                                <div class="attribute-actions hidden">
+                                    <button class="text-gray-400 hover:text-gray-600 mr-2"><i class="fas fa-edit text-xs"></i></button>
+                                    <button class="text-gray-400 hover:text-red-600"><i class="fas fa-times text-xs"></i></button>
+                                </div>
+                            </div>
+                            <div class="flex items-center justify-between py-2 px-3 bg-gray-50 rounded text-sm attribute-item">
+                                <div>Cost</div>
+                                <div class="text-gray-500">Currency / Required</div>
+                                <div class="attribute-actions hidden">
+                                    <button class="text-gray-400 hover:text-gray-600 mr-2"><i class="fas fa-edit text-xs"></i></button>
+                                    <button class="text-gray-400 hover:text-red-600"><i class="fas fa-times text-xs"></i></button>
+                                </div>
+                            </div>
+                        </div>
+                        <button class="text-blue-600 text-sm hover:underline flex items-center">
+                            <i class="fas fa-plus text-xs mr-1"></i> Add Attribute
+                        </button>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <div class="text-sm font-medium text-gray-700 mb-2">Statuses</div>
+                        <div class="flex flex-wrap gap-2">
+                            <span class="px-3 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">Active</span>
+                            <span class="px-3 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800">Expired</span>
+                            <span class="px-3 py-1 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">Renewing</span>
+                            <span class="px-3 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">Draft</span>
+                            <button class="px-3 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-800 flex items-center">
+                                <i class="fas fa-plus text-xs mr-1"></i> Add Status
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="pt-3 border-t flex justify-between">
+                        <div>
+                            <span class="text-xs text-gray-500">Created: April 2, 2024</span>
+                        </div>
+                        <div>
+                            <span class="text-xs text-gray-500">Assets: 28</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Meeting Rooms Asset Type -->
+                <div class="bg-white rounded-md shadow-sm p-5 border">
+                    <div class="flex items-start justify-between mb-4">
+                        <div class="flex items-center">
+                            <div class="bg-green-100 p-3 rounded-md">
+                                <i class="fas fa-door-open text-green-600 text-xl"></i>
+                            </div>
+                            <div class="ml-4">
+                                <h3 class="font-semibold text-lg">Meeting Rooms</h3>
+                                <p class="text-sm text-gray-500">Manage conference and meeting spaces</p>
+                            </div>
+                        </div>
+                        <div class="flex">
+                            <button class="text-gray-400 hover:text-gray-600">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button class="text-gray-400 hover:text-red-600 ml-3">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <div class="text-sm font-medium text-gray-700 mb-2">Attributes</div>
+                        <div class="space-y-2 mb-3">
+                            <div class="flex items-center justify-between py-2 px-3 bg-gray-50 rounded text-sm attribute-item">
+                                <div>Capacity</div>
+                                <div class="text-gray-500">Number / Required</div>
+                                <div class="attribute-actions hidden">
+                                    <button class="text-gray-400 hover:text-gray-600 mr-2"><i class="fas fa-edit text-xs"></i></button>
+                                    <button class="text-gray-400 hover:text-red-600"><i class="fas fa-times text-xs"></i></button>
+                                </div>
+                            </div>
+                            <div class="flex items-center justify-between py-2 px-3 bg-gray-50 rounded text-sm attribute-item">
+                                <div>Location</div>
+                                <div class="text-gray-500">Text / Required</div>
+                                <div class="attribute-actions hidden">
+                                    <button class="text-gray-400 hover:text-gray-600 mr-2"><i class="fas fa-edit text-xs"></i></button>
+                                    <button class="text-gray-400 hover:text-red-600"><i class="fas fa-times text-xs"></i></button>
+                                </div>
+                            </div>
+                            <div class="flex items-center justify-between py-2 px-3 bg-gray-50 rounded text-sm attribute-item">
+                                <div>Equipment</div>
+                                <div class="text-gray-500">Multiselect / Optional</div>
+                                <div class="attribute-actions hidden">
+                                    <button class="text-gray-400 hover:text-gray-600 mr-2"><i class="fas fa-edit text-xs"></i></button>
+                                    <button class="text-gray-400 hover:text-red-600"><i class="fas fa-times text-xs"></i></button>
+                                </div>
+                            </div>
+                            <div class="flex items-center justify-between py-2 px-3 bg-gray-50 rounded text-sm attribute-item">
+                                <div>Maintenance Schedule</div>
+                                <div class="text-gray-500">Select / Required</div>
+                                <div class="attribute-actions hidden">
+                                    <button class="text-gray-400 hover:text-gray-600 mr-2"><i class="fas fa-edit text-xs"></i></button>
+                                    <button class="text-gray-400 hover:text-red-600"><i class="fas fa-times text-xs"></i></button>
+                                </div>
+                            </div>
+                        </div>
+                        <button class="text-blue-600 text-sm hover:underline flex items-center">
+                            <i class="fas fa-plus text-xs mr-1"></i> Add Attribute
+                        </button>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <div class="text-sm font-medium text-gray-700 mb-2">Statuses</div>
+                        <div class="flex flex-wrap gap-2">
+                            <span class="px-3 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">Available</span>
+                            <span class="px-3 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800">Booked</span>
+                            <span class="px-3 py-1 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">Maintenance</span>
+                            <span class="px-3 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-800">Out of Service</span>
+                            <button class="px-3 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-800 flex items-center">
+                                <i class="fas fa-plus text-xs mr-1"></i> Add Status
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="pt-3 border-t flex justify-between">
+                        <div>
+                            <span class="text-xs text-gray-500">Created: March 15, 2024</span>
+                        </div>
+                        <div>
+                            <span class="text-xs text-gray-500">Assets: 14</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Contracts Asset Type -->
+                <div class="bg-white rounded-md shadow-sm p-5 border">
+                    <div class="flex items-start justify-between mb-4">
+                        <div class="flex items-center">
+                            <div class="bg-purple-100 p-3 rounded-md">
+                                <i class="fas fa-file-contract text-purple-600 text-xl"></i>
+                            </div>
+                            <div class="ml-4">
+                                <h3 class="font-semibold text-lg">Contracts</h3>
+                                <p class="text-sm text-gray-500">Manage vendor and service agreements</p>
+                            </div>
+                        </div>
+                        <div class="flex">
+                            <button class="text-gray-400 hover:text-gray-600">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button class="text-gray-400 hover:text-red-600 ml-3">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <div class="text-sm font-medium text-gray-700 mb-2">Attributes</div>
+                        <div class="space-y-2 mb-3">
+                            <div class="flex items-center justify-between py-2 px-3 bg-gray-50 rounded text-sm attribute-item">
+                                <div>Vendor</div>
+                                <div class="text-gray-500">Text / Required</div>
+                                <div class="attribute-actions hidden">
+                                    <button class="text-gray-400 hover:text-gray-600 mr-2"><i class="fas fa-edit text-xs"></i></button>
+                                    <button class="text-gray-400 hover:text-red-600"><i class="fas fa-times text-xs"></i></button>
+                                </div>
+                            </div>
+                            <div class="flex items-center justify-between py-2 px-3 bg-gray-50 rounded text-sm attribute-item">
+                                <div>Start Date</div>
+                                <div class="text-gray-500">Date / Required</div>
+                                <div class="attribute-actions hidden">
+                                    <button class="text-gray-400 hover:text-gray-600 mr-2"><i class="fas fa-edit text-xs"></i></button>
+                                    <button class="text-gray-400 hover:text-red-600"><i class="fas fa-times text-xs"></i></button>
+                                </div>
+                            </div>
+                            <div class="flex items-center justify-between py-2 px-3 bg-gray-50 rounded text-sm attribute-item">
+                                <div>End Date</div>
+                                <div class="text-gray-500">Date / Required</div>
+                                <div class="attribute-actions hidden">
+                                    <button class="text-gray-400 hover:text-gray-600 mr-2"><i class="fas fa-edit text-xs"></i></button>
+                                    <button class="text-gray-400 hover:text-red-600"><i class="fas fa-times text-xs"></i></button>
+                                </div>
+                            </div>
+                            <div class="flex items-center justify-between py-2 px-3 bg-gray-50 rounded text-sm attribute-item">
+                                <div>Value</div>
+                                <div class="text-gray-500">Currency / Required</div>
+                                <div class="attribute-actions hidden">
+                                    <button class="text-gray-400 hover:text-gray-600 mr-2"><i class="fas fa-edit text-xs"></i></button>
+                                    <button class="text-gray-400 hover:text-red-600"><i class="fas fa-times text-xs"></i></button>
+                                </div>
+                            </div>
+                            <div class="flex items-center justify-between py-2 px-3 bg-gray-50 rounded text-sm attribute-item">
+                                <div>Document</div>
+                                <div class="text-gray-500">File / Optional</div>
+                                <div class="attribute-actions hidden">
+                                    <button class="text-gray-400 hover:text-gray-600 mr-2"><i class="fas fa-edit text-xs"></i></button>
+                                    <button class="text-gray-400 hover:text-red-600"><i class="fas fa-times text-xs"></i></button>
+                                </div>
+                            </div>
+                        </div>
+                        <button class="text-blue-600 text-sm hover:underline flex items-center">
+                            <i class="fas fa-plus text-xs mr-1"></i> Add Attribute
+                        </button>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <div class="text-sm font-medium text-gray-700 mb-2">Statuses</div>
+                        <div class="flex flex-wrap gap-2">
+                            <span class="px-3 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">Active</span>
+                            <span class="px-3 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800">Expired</span>
+                            <span class="px-3 py-1 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">Renewing</span>
+                            <span class="px-3 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">Draft</span>
+                            <span class="px-3 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-800">On Hold</span>
+                            <button class="px-3 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-800 flex items-center">
+                                <i class="fas fa-plus text-xs mr-1"></i> Add Status
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="pt-3 border-t flex justify-between">
+                        <div>
+                            <span class="text-xs text-gray-500">Created: February 10, 2024</span>
+                        </div>
+                        <div>
+                            <span class="text-xs text-gray-500">Assets: 42</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Create New Asset Type Card -->
+                <div class="bg-gray-50 rounded-md border-2 border-dashed border-gray-300 p-5 flex flex-col items-center justify-center text-center">
+                    <div class="bg-blue-50 p-3 rounded-full mb-3">
+                        <i class="fas fa-plus text-blue-500 text-xl"></i>
+                    </div>
+                    <h3 class="font-semibold text-lg text-gray-700 mb-1">Create New Asset Type</h3>
+                    <p class="text-sm text-gray-500 mb-4">Add a new category of assets to track</p>
+                    <button class="bg-blue-600 text-white px-4 py-2 rounded-md">
+                        Get Started
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Asset Type Creation Form (initially hidden, would be shown in a modal) -->
+            <div class="bg-white rounded-md shadow-md p-6 border hidden">
+                <h3 class="text-lg font-semibold mb-4">Create New Asset Type</h3>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Name</label>
+                        <input type="text" class="border rounded-md w-full px-3 py-2" placeholder="e.g. Carpark">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Icon</label>
+                        <div class="flex">
+                            <div class="border rounded-l-md px-3 py-2 bg-gray-50 flex items-center">
+                                <i class="fas fa-car"></i>
+                            </div>
+                            <select class="border rounded-r-md flex-1 px-3 py-2 border-l-0">
+                                <option>fa-car</option>
+                                <option>fa-building</option>
+                                <option>fa-laptop</option>
+                                <!-- More icons -->
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Description</label>
+                    <textarea class="border rounded-md w-full px-3 py-2" rows="2" placeholder="Brief description of this asset type"></textarea>
+                </div>
+                
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Define Attributes</label>
+                    <div class="space-y-3 mb-3">
+                        <div class="p-3 border rounded-md bg-gray-50">
+                            <div class="flex justify-between mb-2">
+                                <div class="font-medium">Number of Spaces</div>
+                                <div class="text-sm text-gray-500">Number / Required</div>
+                            </div>
+                            <div class="flex gap-2">
+                                <input type="text" class="border rounded-md flex-1 px-3 py-1.5 text-sm" placeholder="Attribute name" value="Number of Spaces">
+                                <select class="border rounded-md px-3 py-1.5 text-sm">
+                                    <option>Number</option>
+                                    <option>Text</option>
+                                    <option>Date</option>
+                                    <option>Currency</option>
+                                    <option>Select</option>
+                                    <option>Multiselect</option>
+                                    <option>File</option>
+                                </select>
+                                <label class="flex items-center">
+                                    <input type="checkbox" class="mr-1" checked>
+                                    <span class="text-sm">Required</span>
+                                </label>
+                                <button class="text-red-600 hover:text-red-800">
+                                    <i class="fas fa-trash-alt"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <button class="w-full border border-dashed rounded-md py-2 text-blue-600 hover:bg-blue-50 flex items-center justify-center">
+                            <i class="fas fa-plus mr-2"></i> Add Another Attribute
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Define Statuses</label>
+                    <div class="space-y-2 mb-3">
+                        <div class="flex items-center gap-2">
+                            <input type="text" class="border rounded-md flex-1 px-3 py-1.5 text-sm" placeholder="Status name" value="Available">
+                            <div class="w-8 h-8 bg-blue-100 rounded-md flex items-center justify-center">
+                                <input type="color" class="w-5 h-5 cursor-pointer" value="#DBEAFE">
+                            </div>
+                            <button class="text-red-600 hover:text-red-800">
+                                <i class="fas fa-trash-alt"></i>
+                            </button>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <input type="text" class="border rounded-md flex-1 px-3 py-1.5 text-sm" placeholder="Status name" value="Full">
+                            <div class="w-8 h-8 bg-red-100 rounded-md flex items-center justify-center">
+                                <input type="color" class="w-5 h-5 cursor-pointer" value="#FEE2E2">
+                            </div>
+                            <button class="text-red-600 hover:text-red-800">
+                                <i class="fas fa-trash-alt"></i>
+                            </button>
+                        </div>
+                        <button class="w-full border border-dashed rounded-md py-2 text-blue-600 hover:bg-blue-50 flex items-center justify-center">
+                            <i class="fas fa-plus mr-2"></i> Add Another Status
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="flex justify-end gap-3 pt-4 border-t">
+                    <button class="px-4 py-2 border rounded-md text-gray-700 hover:bg-gray-50">Cancel</button>
+                    <button class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700">Create Asset Type</button>
+                </div>
+            </div>
+            
+            <!-- Attribute Edit Modal (initially hidden) -->
+            <div class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden">
+                <div class="bg-white rounded-lg w-full max-w-md p-6">
+                    <h3 class="text-lg font-semibold mb-4">Edit Attribute</h3>
+                    
+                    <div class="mb-4">
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Name</label>
+                        <input type="text" class="border rounded-md w-full px-3 py-2" value="Equipment">
+                    </div>
+                    
+                    <div class="mb-4">
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Type</label>
+                        <select class="border rounded-md w-full px-3 py-2">
+                            <option>Text</option>
+                            <option>Number</option>
+                            <option>Date</option>
+                            <option>Currency</option>
+                            <option selected>Multiselect</option>
+                            <option>Select</option>
+                            <option>File</option>
+                        </select>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Options (one per line)</label>
+                        <textarea class="border rounded-md w-full px-3 py-2" rows="4">Projector
+Video Conference
+Whiteboard
+TV
+Sound System</textarea>
+                    </div>
+                    
+                    <div class="mb-6">
+                        <label class="flex items-center">
+                            <input type="checkbox" class="mr-2">
+                            <span>Required field</span>
+                        </label>
+                    </div>
+                    
+                    <div class="flex justify-end gap-3">
+                        <button class="px-4 py-2 border rounded-md text-gray-700 hover:bg-gray-50">Cancel</button>
+                        <button class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700">Save Changes</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // JavaScript for interactive elements
+        document.addEventListener('DOMContentLoaded', function() {
+            const assetCatalogToggle = document.getElementById('asset-catalog-toggle');
+            const assetCatalogItems = document.getElementById('asset-catalog-items');
+            
+            assetCatalogToggle.addEventListener('click', function() {
+                // Toggle the visibility of asset catalog items
+                if (assetCatalogItems.style.display === 'none') {
+                    assetCatalogItems.style.display = 'block';
+                    assetCatalogToggle.querySelector('.fa-chevron-down').classList.remove('fa-chevron-down');
+                    assetCatalogToggle.querySelector('.fas').classList.add('fa-chevron-down');
+                } else {
+                    assetCatalogItems.style.display = 'none';
+                    assetCatalogToggle.querySelector('.fa-chevron-down').classList.remove('fa-chevron-down');
+                    assetCatalogToggle.querySelector('.fas').classList.add('fa-chevron-right');
+                }
+            });
+        });
+    </script>
+</body>
+</html>
