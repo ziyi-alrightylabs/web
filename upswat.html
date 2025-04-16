@@ -276,65 +276,80 @@
       // 5. Submission Handling
       // =============================
       const submitButton = document.getElementById("submitButton");
-      submitButton.addEventListener("click", function () {
-        // Validate inputs
-        if (photoInput.files.length === 0) {
-          if (!confirm("No photos uploaded. Proceed anyway?")) {
-            return;
-          }
-        }
-        if (!capturedLocation) {
-          if (!confirm("Location not captured. Proceed without location?")) {
-            return;
-          }
-        }
-        if (signaturePad.isEmpty()) {
-          if (!confirm("Signature is empty. Proceed without a signature?")) {
-            return;
-          }
-        }
+      submitButton.addEventListener("click", async function () {
+  // Validate inputs
+  if (photoInput.files.length === 0) {
+    if (!confirm("No photos uploaded. Proceed anyway?")) return;
+  }
+  if (!capturedLocation) {
+    if (!confirm("Location not captured. Proceed without location?")) return;
+  }
+  if (signaturePad.isEmpty()) {
+    if (!confirm("Signature is empty. Proceed without a signature?")) return;
+  }
 
-        // Assemble all data into FormData
-        const formData = new FormData();
-        // Include query params
-        for (const key in params) {
-          formData.append(key, params[key]);
-        }
-        // Photo files
-        for (let i = 0; i < photoInput.files.length; i++) {
-          formData.append("photo" + (i + 1), photoInput.files[i]);
-        }
-        // Location
-        if (capturedLocation) {
-          formData.append("latitude", capturedLocation.latitude);
-          formData.append("longitude", capturedLocation.longitude);
-        }
-        // Signature
-        if (!signaturePad.isEmpty()) {
-          const signatureDataUrl = signaturePad.toDataURL();
-          formData.append("signature", signatureDataUrl);
-        }
+  // Assemble all data into FormData
+  const formData = new FormData();
 
-        // Demo: Log formData to console
-        alert("Submission is being processed. Check console for details.");
-        for (let pair of formData.entries()) {
-          console.log(pair[0] + ": ", pair[1]);
-        }
+  // Include query params
+  for (const key in params) {
+    formData.append(key, params[key]);
+  }
 
-        // Example submission
-        // fetch('https://yourdomain.com/api/submitDelivery', {
-        //   method: 'POST',
-        //   body: formData
-        // })
-        //   .then(response => response.json())
-        //   .then(data => {
-        //     alert("Submission successful!");
-        //   })
-        //   .catch(error => {
-        //     console.error("Error submitting data:", error);
-        //     alert("Submission failed. Please try again.");
-        //   });
-      });
+  // Photo files
+  for (let i = 0; i < photoInput.files.length; i++) {
+    formData.append("photo" + (i + 1), photoInput.files[i]);
+  }
+
+  // Location
+  if (capturedLocation) {
+    formData.append("latitude", capturedLocation.latitude);
+    formData.append("longitude", capturedLocation.longitude);
+  }
+
+  // Signature as image blob (not base64 string)
+  if (!signaturePad.isEmpty()) {
+    const dataURL = signaturePad.toDataURL("image/png");
+    const blob = dataURLtoBlob(dataURL);
+    formData.append("signature", blob, "signature.png");
+  }
+
+  // Disable button during submission
+  submitButton.disabled = true;
+  submitButton.innerText = "Submitting...";
+
+  try {
+    const response = await fetch("https://goswat.onrender.com/api/submitDelivery", {
+      method: "POST",
+      body: formData,
+    });
+
+    if (!response.ok) throw new Error("Server returned " + response.status);
+
+    const result = await response.json();
+    console.log("✅ Success:", result);
+    alert("✅ Submission successful!");
+  } catch (error) {
+    console.error("❌ Submission error:", error);
+    alert("❌ Submission failed: " + error.message);
+  } finally {
+    submitButton.disabled = false;
+    submitButton.innerText = "Complete";
+  }
+});
+
+// Helper to convert dataURL to Blob
+function dataURLtoBlob(dataURL) {
+  const parts = dataURL.split(",");
+  const mime = parts[0].match(/:(.*?);/)[1];
+  const bstr = atob(parts[1]);
+  let n = bstr.length;
+  const u8arr = new Uint8Array(n);
+  while (n--) {
+    u8arr[n] = bstr.charCodeAt(n);
+  }
+  return new Blob([u8arr], { type: mime });
+}
     </script>
   </body>
 </html>
