@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Delivery Completion</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        padding: 10px;
+        margin: 0;
+        background-color: #f9f9f9;
+      }
+      .container {
+        max-width: 500px;
+        margin: 0 auto;
+        background: #fff;
+        padding: 15px;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+      }
+      h1, h2 {
+        text-align: center;
+      }
+      input, button {
+        width: 100%;
+        padding: 10px;
+        margin: 10px 0;
+        font-size: 1em;
+        box-sizing: border-box;
+      }
+      #signatureCanvas {
+        border: 1px solid #ccc;
+        width: 100%;
+        height: 200px;
+      }
+      .preview-img {
+        width: 30%;
+        margin: 5px;
+      }
+      #photoPreview {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+      }
+    </style>
+    <!-- Signature Pad library -->
+    <script src="https://cdn.jsdelivr.net/npm/signature_pad@4.0.0/dist/signature_pad.umd.min.js"></script>
+  </head>
+  <body>
+    <div class="container">
+      <h1>Delivery Capture</h1>
+      
+      <!-- Referral Parameters Display -->
+      <div id="referralInfo"></div>
+      
+      <!-- Photo Upload Section -->
+      <h2>Upload Photos (up to 3)</h2>
+      <input type="file" id="photoInput" accept="image/*" multiple>
+      <div id="photoPreview"></div>
+      
+      <!-- Geolocation Section -->
+      <h2>Your Location</h2>
+      <button id="locationButton">Get Location</button>
+      <p id="locationDisplay">Location not captured yet.</p>
+      
+      <!-- Signature Capture Section -->
+      <h2>Signature</h2>
+      <canvas id="signatureCanvas"></canvas>
+      <button id="clearSignature">Clear Signature</button>
+      
+      <!-- Complete Submission -->
+      <button id="submitButton">Complete</button>
+    </div>
+    
+    <script>
+      // Utility: Parse URL query parameters
+      function getQueryParams() {
+        let params = {};
+        let queryString = window.location.search.substring(1);
+        let regex = /([^&=]+)=([^&]*)/g;
+        let m;
+        while ((m = regex.exec(queryString))) {
+          params[decodeURIComponent(m[1])] = decodeURIComponent(m[2]);
+        }
+        return params;
+      }
+      
+      // Display referral info (mobile, project, stop, etc.)
+      const params = getQueryParams();
+      const referralInfoDiv = document.getElementById('referralInfo');
+      if (Object.keys(params).length > 0) {
+        referralInfoDiv.innerHTML = `
+          <p><strong>Referral Info:</strong></p>
+          <p>Mobile: ${params.mobile || 'N/A'}</p>
+          <p>Project: ${params.project || 'N/A'}</p>
+          <p>Stop: ${params.stop || 'N/A'}</p>
+        `;
+      }
+      
+      // Photo Upload Handling
+      const photoInput = document.getElementById('photoInput');
+      const photoPreviewDiv = document.getElementById('photoPreview');
+      photoInput.addEventListener('change', function() {
+        photoPreviewDiv.innerHTML = '';
+        const files = photoInput.files;
+        if (files.length > 3) {
+          alert("You can upload up to 3 photos only.");
+          photoInput.value = ''; // Reset file input if too many files selected
+          return;
+        }
+        for (let i = 0; i < files.length; i++) {
+          const file = files[i];
+          const reader = new FileReader();
+          reader.onload = function(e) {
+            const img = document.createElement('img');
+            img.src = e.target.result;
+            img.className = 'preview-img';
+            photoPreviewDiv.appendChild(img);
+          }
+          reader.readAsDataURL(file);
+        }
+      });
+      
+      // Geolocation Handling
+      const locationButton = document.getElementById('locationButton');
+      const locationDisplay = document.getElementById('locationDisplay');
+      let capturedLocation = null;
+      locationButton.addEventListener('click', function() {
+        if (navigator.geolocation) {
+          navigator.geolocation.getCurrentPosition(function(position) {
+            capturedLocation = { 
+              latitude: position.coords.latitude, 
+              longitude: position.coords.longitude 
+            };
+            locationDisplay.innerText = "Lat: " + capturedLocation.latitude.toFixed(5) +
+              ", Lon: " + capturedLocation.longitude.toFixed(5);
+          }, function(error) {
+            alert("Error getting location: " + error.message);
+          });
+        } else {
+          alert("Geolocation is not supported by this browser.");
+        }
+      });
+      
+      // Signature Pad Setup
+      const canvas = document.getElementById('signatureCanvas');
+      const signaturePad = new SignaturePad(canvas);
+      
+      // Resize canvas for high-DPI devices
+      function resizeCanvas() {
+        const ratio = Math.max(window.devicePixelRatio || 1, 1);
+        canvas.width = canvas.offsetWidth * ratio;
+        canvas.height = canvas.offsetHeight * ratio;
+        canvas.getContext("2d").scale(ratio, ratio);
+        signaturePad.clear(); // Ensure the pad is cleared after resizing
+      }
+      window.addEventListener("resize", resizeCanvas);
+      resizeCanvas();
+      
+      // Clear signature on button click
+      const clearButton = document.getElementById('clearSignature');
+      clearButton.addEventListener('click', function() {
+        signaturePad.clear();
+      });
+      
+      // Submission Handling
+      const submitButton = document.getElementById('submitButton');
+      submitButton.addEventListener('click', function() {
+        // Validate inputs; allow user to override if desired
+        if (photoInput.files.length === 0) {
+          if (!confirm("No photos uploaded. Proceed anyway?")) {
+            return;
+          }
+        }
+        if (!capturedLocation) {
+          if (!confirm("Location not captured. Proceed without location?")) {
+            return;
+          }
+        }
+        if (signaturePad.isEmpty()) {
+          if (!confirm("Signature is empty. Proceed without a signature?")) {
+            return;
+          }
+        }
+        
+        // Assemble all data into a FormData object
+        const formData = new FormData();
+        // Append referral parameters from URL
+        for (const key in params) {
+          formData.append(key, params[key]);
+        }
+        // Append photo files
+        for (let i = 0; i < photoInput.files.length; i++) {
+          formData.append('photo' + (i + 1), photoInput.files[i]);
+        }
+        // Append geolocation data if available
+        if (capturedLocation) {
+          formData.append('latitude', capturedLocation.latitude);
+          formData.append('longitude', capturedLocation.longitude);
+        }
+        // Append signature image as data URL if not empty
+        if (!signaturePad.isEmpty()) {
+          const signatureDataUrl = signaturePad.toDataURL();
+          formData.append('signature', signatureDataUrl);
+        }
+        
+        // For demonstration purposes, we will log the formData entries.
+        // Replace this section with your actual submission endpoint.
+        alert("Submission is being processed. Check console for details.");
+        for (let pair of formData.entries()) {
+          console.log(pair[0] + ':', pair[1]);
+        }
+        
+        // Example submission (replace URL with your backend endpoint):
+        // fetch('https://yourdomain.com/api/submitDelivery', {
+        //   method: 'POST',
+        //   body: formData
+        // })
+        // .then(response => response.json())
+        // .then(data => {
+        //   alert("Submission successful!");
+        // })
+        // .catch(error => {
+        //   console.error("Error submitting data:", error);
+        //   alert("Submission failed. Please try again.");
+        // });
+      });
+    </script>
+  </body>
+</html>
