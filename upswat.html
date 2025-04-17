@@ -257,9 +257,14 @@
         return;
       }
 
-      if (photoInput.files.length === 0 && !confirm("No photos uploaded. Proceed anyway?")) return;
-      if (signaturePad.isEmpty() && !confirm("Signature is empty. Proceed anyway?")) return;
-
+      if (photoInput.files.length === 0) {
+        alert("Please upload at least one photo before submitting.");
+        return;
+      }
+      if (signaturePad.isEmpty()) {
+        alert("Please provide a signature before submitting.");
+        return;
+      }
       const formData = new FormData();
       for (const key in params) formData.append(key, params[key]);
       for (let i = 0; i < photoInput.files.length; i++) {
