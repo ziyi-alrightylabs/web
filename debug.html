@@ -61,7 +61,10 @@
       })
       .then(res => {
         log("Server responded with status: " + res.status);
-        return res.text();
+        return res.json();
+      })
+      .then(data => {
+        log("Response JSON:\\n" + JSON.stringify(data, null, 2));
       })
       .then(text => {
         log("Response text:\n" + text);
