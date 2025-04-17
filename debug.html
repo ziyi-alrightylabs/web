@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -23,9 +22,14 @@
     }
 
     function dataURLtoBlob(dataurl) {
-      const arr = dataurl.split(","), mime = arr[0].match(/:(.*?);/)[1],
-            bstr = atob(arr[1]), n = bstr.length, u8arr = new Uint8Array(n);
-      while (n--) u8arr[n] = bstr.charCodeAt(n);
+      const arr = dataurl.split(",");
+      const mime = arr[0].match(/:(.*?);/)[1];
+      const bstr = atob(arr[1]);
+      let n = bstr.length;
+      const u8arr = new Uint8Array(n);
+      while (n--) {
+        u8arr[n] = bstr.charCodeAt(n);
+      }
       return new Blob([u8arr], { type: mime });
     }
 
@@ -39,7 +43,6 @@
       formData.append("latitude", "1.29048");
       formData.append("longitude", "103.84951");
 
-      // Simulate a signature blob
       const dummyCanvas = document.createElement("canvas");
       dummyCanvas.width = 200;
       dummyCanvas.height = 100;
@@ -50,25 +53,22 @@
       const blob = dataURLtoBlob(dataURL);
       formData.append("signature", blob, "debug-signature.png");
 
-      log("Sending test POST request...");
+      log("Submitting to server...");
 
-fetch("https://web-0ft6.onrender.com/api/submitDelivery", {
-  method: "POST",
-  headers: {
-    "Content-Type": "application/json"
-  },
-  body: JSON.stringify({ test: "ping" })
-})
-.then(res => {
-  log("Status: " + res.status);
-  return res.text();
-})
-.then(text => {
-  log("Response: " + text);
-})
-.catch(err => {
-  log("Fetch error: " + err.message);
-});
+      fetch("https://web-0ft6.onrender.com/api/submitDelivery", {
+        method: "POST",
+        body: formData
+      })
+      .then(res => {
+        log("Server responded with status: " + res.status);
+        return res.text();
+      })
+      .then(text => {
+        log("Response text:\n" + text);
+      })
+      .catch(err => {
+        log("Fetch error: " + err.message);
+      });
     });
   </script>
 </body>
