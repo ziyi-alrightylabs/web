@@ -50,21 +50,25 @@
       const blob = dataURLtoBlob(dataURL);
       formData.append("signature", blob, "debug-signature.png");
 
-      log("Submitting to server...");
-      fetch("https://web-0ft6.onrender.com/api/submitDelivery", {
-        method: "POST",
-        body: formData
-      })
-      .then(res => {
-        log("Server responded with status: " + res.status);
-        return res.json();
-      })
-      .then(data => {
-        log("Response JSON:\n" + JSON.stringify(data, null, 2));
-      })
-      .catch(err => {
-        log("Fetch error: " + err.message);
-      });
+      log("Sending test POST request...");
+
+fetch("https://web-0ft6.onrender.com/api/submitDelivery", {
+  method: "POST",
+  headers: {
+    "Content-Type": "application/json"
+  },
+  body: JSON.stringify({ test: "ping" })
+})
+.then(res => {
+  log("Status: " + res.status);
+  return res.text();
+})
+.then(text => {
+  log("Response: " + text);
+})
+.catch(err => {
+  log("Fetch error: " + err.message);
+});
     });
   </script>
 </body>
