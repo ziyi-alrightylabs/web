@@ -92,34 +92,54 @@
       display: none;
     }
   </style>
+  <script src="https://cdn.jsdelivr.net/npm/signature_pad@4.0.0/dist/signature_pad.umd.min.js"></script>
 </head>
 <body>
   <div class="container">
     <div class="card">
       <div class="card-header">Delivery Capture</div>
       <div class="card-body">
-        <div id="referralInfo" class="mb-3">
-          <p><strong>Booking Information:</strong></p>
-          <ul class="list-unstyled">
-            <li><strong>Stop #:</strong> 8</li>
-            <li><strong>Node ID:</strong> 12852596</li>
-            <li><strong>Node UID:</strong> d6bb2131-0988-4683-9352-175c6d1286db</li>
-            <li><strong>Node Type:</strong> pickup</li>
-            <li><strong>Booking ID:</strong> 6574299</li>
-            <li><strong>Booking UID:</strong> d402e36e-3029-487b-95a4-5c91fa912114</li>
-            <li><strong>Vehicle ID:</strong> 1877452</li>
-            <li><strong>Simulation:</strong> 164919</li>
-          </ul>
+        <div id="referralInfo" class="mb-3"></div>
+
+        <div class="mb-4">
+          <h5>Upload Photos (up to 3)</h5>
+          <label for="photoInput" class="custom-file-upload">Choose Files</label>
+          <input type="file" id="photoInput" accept="image/*" multiple />
+          <div id="photoPreview" class="d-flex flex-wrap mt-3"></div>
+        </div>
+
+        <div class="mb-4">
+          <h5>Your Location</h5>
+          <button id="locationButton" class="btn btn-primary mb-2">Get Location</button>
+          <p id="locationDisplay" class="form-control-plaintext">Location not captured yet.</p>
+        </div>
+
+        <div class="mb-4">
+          <h5>Add Notes</h5>
+          <textarea id="notesInput" class="form-control" rows="4" placeholder="Add any relevant notes here..."></textarea>
+        </div>
+
+        <div class="mb-4">
+          <h5>Signature</h5>
+          <div class="form-check mb-2">
+            <input class="form-check-input" type="checkbox" id="noSignatureCheckbox">
+            <label class="form-check-label" for="noSignatureCheckbox">
+              No Signature Required
+            </label>
+          </div>
+          <canvas id="signatureCanvas"></canvas>
+          <button id="clearSignature" class="btn btn-secondary btn-sm mt-2">Clear Signature</button>
         </div>
 
         <div class="text-center">
-          <button id="showPayloadBtn" class="btn btn-outline-primary">Show Simulated Payload</button>
+          <button id="submitButton" class="btn btn-success">Complete</button>
+          <button id="showPayloadBtn" class="btn btn-outline-primary mt-3">Show Simulated Payload</button>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- Modal -->
+  <!-- Modal for Simulated Payload -->
   <div class="modal fade" id="payloadModal" tabindex="-1" aria-labelledby="payloadModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg modal-dialog-scrollable">
       <div class="modal-content">
@@ -128,7 +148,7 @@
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <div class="modal-body">
-          <pre id="payloadContent" class="bg-light p-3 rounded border text-break"></pre>
+          <pre id="payloadContent" class="bg-light p-3 rounded border text-break small"></pre>
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
@@ -137,6 +157,7 @@
     </div>
   </div>
 
+  <!-- Required scripts -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
   <script>
     function getQueryParams() {
@@ -150,24 +171,161 @@
       return params;
     }
 
+    function getDistanceFromLatLonInMeters(lat1, lon1, lat2, lon2) {
+      const R = 6371000;
+      const dLat = (lat2 - lat1) * Math.PI / 180;
+      const dLon = (lon2 - lon1) * Math.PI / 180;
+      const a = Math.sin(dLat / 2) ** 2 +
+        Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) * Math.sin(dLon / 2) ** 2;
+      const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+      return R * c;
+    }
+
     const params = getQueryParams();
+    const referralInfoDiv = document.getElementById("referralInfo");
+    if (Object.keys(params).length > 0) {
+      referralInfoDiv.innerHTML = `
+        <p><strong>Booking Information:</strong></p>
+        <ul class="list-unstyled">
+          <li><strong>Stop #:</strong> ${params.stop || "N/A"}</li>
+          <li><strong>Node ID:</strong> ${params.node_id || "N/A"}</li>
+          <li><strong>Node UID:</strong> ${params.node_uid || "N/A"}</li>
+          <li><strong>Node Type:</strong> ${params.node_type || "N/A"}</li>
+          <li><strong>Booking ID:</strong> ${params.booking_id || "N/A"}</li>
+          <li><strong>Booking UID:</strong> ${params.booking_uid || "N/A"}</li>
+          <li><strong>Vehicle ID:</strong> ${params.vehicle_id || "N/A"}</li>
+          <li><strong>Simulation:</strong> ${params.simulation || "N/A"}</li>
+        </ul>
+      `;
+    }
+
+    const photoInput = document.getElementById("photoInput");
+    const photoPreviewDiv = document.getElementById("photoPreview");
+    let selectedPhotos = [];
+
+    photoInput.addEventListener("change", function () {
+      const newFiles = Array.from(photoInput.files);
+      if (selectedPhotos.length + newFiles.length > 3) {
+        alert("You can upload up to 3 photos only.");
+        photoInput.value = "";
+        return;
+      }
+
+      selectedPhotos = selectedPhotos.concat(newFiles);
+      renderPhotoPreview();
+      photoInput.value = "";
+    });
+
+    function renderPhotoPreview() {
+      photoPreviewDiv.innerHTML = "";
+      selectedPhotos.forEach((file, index) => {
+        const reader = new FileReader();
+        reader.onload = function (e) {
+          const wrapper = document.createElement("div");
+          wrapper.className = "position-relative me-2 mb-2";
+
+          const img = document.createElement("img");
+          img.src = e.target.result;
+          img.className = "preview-img";
+
+          const delBtn = document.createElement("button");
+          delBtn.innerHTML = "&times;";
+          delBtn.className = "btn btn-sm btn-danger position-absolute top-0 end-0";
+          delBtn.style.transform = "translate(50%,-50%)";
+          delBtn.onclick = () => {
+            selectedPhotos.splice(index, 1);
+            renderPhotoPreview();
+          };
+
+          wrapper.appendChild(img);
+          wrapper.appendChild(delBtn);
+          photoPreviewDiv.appendChild(wrapper);
+        };
+        reader.readAsDataURL(file);
+      });
+    }
+
+    const locationButton = document.getElementById("locationButton");
+    const locationDisplay = document.getElementById("locationDisplay");
+    let capturedLocation = null;
+    let isLocationWithinBounds = true;
+
+    locationButton.addEventListener("click", function () {
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+          function (position) {
+            capturedLocation = {
+              latitude: position.coords.latitude,
+              longitude: position.coords.longitude,
+            };
+            locationDisplay.innerText =
+              `Lat: ${capturedLocation.latitude.toFixed(5)}, Lon: ${capturedLocation.longitude.toFixed(5)}`;
+          },
+          function (error) {
+            alert("Error getting location: " + error.message);
+          }
+        );
+      } else {
+        alert("Geolocation is not supported by this browser.");
+      }
+    });
+
+    const canvas = document.getElementById("signatureCanvas");
+    const signaturePad = new SignaturePad(canvas);
+
+    function resizeCanvas() {
+      const ratio = Math.max(window.devicePixelRatio || 1, 1);
+      canvas.width = canvas.offsetWidth * ratio;
+      canvas.height = canvas.offsetHeight * ratio;
+      canvas.getContext("2d").scale(ratio, ratio);
+      signaturePad.clear();
+    }
+    window.addEventListener("resize", resizeCanvas);
+    resizeCanvas();
+
+    document.getElementById("clearSignature").addEventListener("click", function () {
+      signaturePad.clear();
+    });
 
     document.getElementById("showPayloadBtn").addEventListener("click", function () {
-      const simulatedPayload = {
-        simulation_id: parseInt(params.simulation) || 172571,
+      const simulation_id = parseInt(params.simulation) || 19138;
+      const node_id = parseInt(params.node_id) || 2349069;
+      const node_uid = params.node_uid || "32b0ef45-6baa-44aa-8203-ce9312ab645b";
+      const node_type = params.node_type || "dropoff";
+      const booking_id = parseInt(params.booking_id) || 1122584;
+      const booking_uid = params.booking_uid || "efbbe0f6-a80c-520b-81fa-5f1621cfd90b";
+      const vehicle_id = parseInt(params.vehicle_id) || 182389;
+
+      const lat = capturedLocation?.latitude || 1.3;
+      const lon = capturedLocation?.longitude || 103.8;
+
+      const image_urls = selectedPhotos.map((file, index) => {
+        return `https://firebasestorage.googleapis.com/v0/b/your-bucket/o/sample_image_${index + 1}.jpg?alt=media`;
+      });
+
+      const payload = {
         data: {
-          booking_id: parseInt(params.booking_id) || 22151625,
           status: "completed",
-          vehicle_id: parseInt(params.vehicle_id) || 17590317,
-          booking_uid: params.booking_uid || "e438ab3d-b33a-572d-a114-0a5490e07f40",
-          node_type: params.node_type || "dropoff",
-          node_id: parseInt(params.node_id) || 48332514,
-          node_uid: params.node_uid || "a1d1a6ae-9a0d-40c1-a633-3d6ef05cf7b9"
+          node_id,
+          node_uid,
+          node_type,
+          booking_id,
+          vehicle_id,
+          action_data: {
+            lat,
+            lon,
+            data: {},
+            image_urls,
+            action_type: "proof_of_delivery",
+            action_subtype: "photo"
+          },
+          booking_uid
         },
+        simulation_id,
         current_sim_ts: new Date().toISOString()
       };
 
-      document.getElementById("payloadContent").textContent = JSON.stringify(simulatedPayload, null, 2);
+      document.getElementById("payloadContent").textContent = JSON.stringify(payload, null, 2);
       const modal = new bootstrap.Modal(document.getElementById("payloadModal"));
       modal.show();
     });
