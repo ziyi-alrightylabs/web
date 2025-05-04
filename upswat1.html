@@ -163,12 +163,21 @@
   const referralInfoDiv = document.getElementById("referralInfo");
   if (Object.keys(params).length > 0) {
     referralInfoDiv.innerHTML = `
-      <p><strong>Referral Info:</strong></p>
-      <p>Node Id: ${params.id || "N/A"}</p>
-      <p>Simulation Id: ${params.simulation || "N/A"}</p>
-      <p>Node No: ${params.stop || "N/A"}</p>
-    `;
+  <p><strong>Booking Information:</strong></p>
+  <ul class="list-unstyled">
+    <li><strong>Stop #:</strong> ${params.stop || "N/A"}</li>
+    <li><strong>Node ID:</strong> ${params.node_id || "N/A"}</li>
+    <li><strong>Node UID:</strong> ${params.node_uid || "N/A"}</li>
+    <li><strong>Node Type:</strong> ${params.node_type || "N/A"}</li>
+    <li><strong>Booking ID:</strong> ${params.booking_id || "N/A"}</li>
+    <li><strong>Booking UID:</strong> ${params.booking_uid || "N/A"}</li>
+    <li><strong>Vehicle ID:</strong> ${params.vehicle_id || "N/A"}</li>
+    <li><strong>Simulation:</strong> ${params.simulation || "N/A"}</li>
+  </ul>
+`;
   }
+
+      
 
   const photoInput = document.getElementById("photoInput");
   const photoPreviewDiv = document.getElementById("photoPreview");
