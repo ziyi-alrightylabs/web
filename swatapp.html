@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="="en">
+<html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -144,8 +144,18 @@
     <div class="card">
       <div class="card-header">Delivery Capture</div>
       <div class="card-body">
-        <div id="referralInfo" class="mb-3"></div>
 
+        <!-- Collapsible Booking Info -->
+        <div class="mb-3">
+          <button class="btn btn-outline-secondary w-100 mb-2" type="button" data-bs-toggle="collapse" data-bs-target="#referralInfo" aria-expanded="false" aria-controls="referralInfo">
+            Booking Information
+          </button>
+          <div class="collapse" id="referralInfo">
+            <ul id="referralInfoList" class="list-unstyled mb-0 px-3 py-2 rounded bg-light border"></ul>
+          </div>
+        </div>
+
+        <!-- Upload Photos -->
         <div class="mb-4">
           <h5>Upload Photos (up to 3)</h5>
           <label for="photoInput" class="custom-file-upload">Choose Files</label>
@@ -153,17 +163,20 @@
           <div id="photoPreview" class="d-flex flex-wrap mt-3"></div>
         </div>
 
+        <!-- Location -->
         <div class="mb-4">
           <h5>Your Location</h5>
           <button id="locationButton" class="btn btn-primary mb-2">Get Location</button>
           <p id="locationDisplay" class="form-control-plaintext">Location not captured yet.</p>
         </div>
 
+        <!-- Notes -->
         <div class="mb-4">
           <h5>Add Notes</h5>
           <textarea id="notesInput" class="form-control" rows="4" placeholder="Add any relevant notes here..."></textarea>
         </div>
 
+        <!-- Signature -->
         <div class="mb-4">
           <h5>Signature</h5>
           <div class="form-check mb-2">
@@ -176,6 +189,7 @@
           <button id="clearSignature" class="btn btn-secondary btn-sm mt-2">Clear Signature</button>
         </div>
 
+        <!-- Submit -->
         <div class="text-center">
           <button id="submitButton" class="btn btn-success">Complete</button>
         </div>
@@ -183,7 +197,7 @@
     </div>
   </div>
 
-  <!-- Modal for Simulated Payload -->
+  <!-- Modal -->
   <div class="modal fade" id="payloadModal" tabindex="-1" aria-labelledby="payloadModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg modal-dialog-scrollable">
       <div class="modal-content">
@@ -216,20 +230,25 @@
     }
 
     const params = getQueryParams();
-    const referralInfoDiv = document.getElementById("referralInfo");
-    referralInfoDiv.innerHTML = `
-      <p><strong>Booking Information:</strong></p>
-      <ul class="list-unstyled">
-        <li><strong>Stop #:</strong> ${params.stop || ""}</li>
-        <li><strong>Node ID:</strong> ${params.node_id || ""}</li>
-        <li><strong>Node UID:</strong> ${params.node_uid || ""}</li>
-        <li><strong>Node Type:</strong> ${params.node_type || ""}</li>
-        <li><strong>Booking ID:</strong> ${params.booking_id || ""}</li>
-        <li><strong>Booking UID:</strong> ${params.booking_uid || ""}</li>
-        <li><strong>Vehicle ID:</strong> ${params.vehicle_id || ""}</li>
-        <li><strong>Simulation:</strong> ${params.simulation || ""}</li>
-      </ul>
-    `;
+
+    const labels = {
+      stop: "Stop #",
+      node_id: "Node ID",
+      node_uid: "Node UID",
+      node_type: "Node Type",
+      booking_id: "Booking ID",
+      booking_uid: "Booking UID",
+      vehicle_id: "Vehicle ID",
+      simulation: "Simulation"
+    };
+
+    const referralInfoList = document.getElementById("referralInfoList");
+    for (const key in labels) {
+      const value = params[key] || "";
+      const li = document.createElement("li");
+      li.innerHTML = `<strong>${labels[key]}:</strong> ${value}`;
+      referralInfoList.appendChild(li);
+    }
 
     const photoInput = document.getElementById("photoInput");
     const photoPreviewDiv = document.getElementById("photoPreview");
