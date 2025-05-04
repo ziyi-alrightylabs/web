@@ -133,13 +133,12 @@
 
         <div class="text-center">
           <button id="submitButton" class="btn btn-success">Complete</button>
-          <button id="showPayloadBtn" class="btn btn-outline-primary mt-3">Show Simulated Payload</button>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- Modal for Simulated Payload -->
+  <!-- Modal -->
   <div class="modal fade" id="payloadModal" tabindex="-1" aria-labelledby="payloadModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg modal-dialog-scrollable">
       <div class="modal-content">
@@ -157,7 +156,6 @@
     </div>
   </div>
 
-  <!-- Required scripts -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
   <script>
     function getQueryParams() {
@@ -171,33 +169,21 @@
       return params;
     }
 
-    function getDistanceFromLatLonInMeters(lat1, lon1, lat2, lon2) {
-      const R = 6371000;
-      const dLat = (lat2 - lat1) * Math.PI / 180;
-      const dLon = (lon2 - lon1) * Math.PI / 180;
-      const a = Math.sin(dLat / 2) ** 2 +
-        Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) * Math.sin(dLon / 2) ** 2;
-      const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-      return R * c;
-    }
-
     const params = getQueryParams();
     const referralInfoDiv = document.getElementById("referralInfo");
-    if (Object.keys(params).length > 0) {
-      referralInfoDiv.innerHTML = `
-        <p><strong>Booking Information:</strong></p>
-        <ul class="list-unstyled">
-          <li><strong>Stop #:</strong> ${params.stop || "N/A"}</li>
-          <li><strong>Node ID:</strong> ${params.node_id || "N/A"}</li>
-          <li><strong>Node UID:</strong> ${params.node_uid || "N/A"}</li>
-          <li><strong>Node Type:</strong> ${params.node_type || "N/A"}</li>
-          <li><strong>Booking ID:</strong> ${params.booking_id || "N/A"}</li>
-          <li><strong>Booking UID:</strong> ${params.booking_uid || "N/A"}</li>
-          <li><strong>Vehicle ID:</strong> ${params.vehicle_id || "N/A"}</li>
-          <li><strong>Simulation:</strong> ${params.simulation || "N/A"}</li>
-        </ul>
-      `;
-    }
+    referralInfoDiv.innerHTML = `
+      <p><strong>Booking Information:</strong></p>
+      <ul class="list-unstyled">
+        <li><strong>Stop #:</strong> ${params.stop || ""}</li>
+        <li><strong>Node ID:</strong> ${params.node_id || ""}</li>
+        <li><strong>Node UID:</strong> ${params.node_uid || ""}</li>
+        <li><strong>Node Type:</strong> ${params.node_type || ""}</li>
+        <li><strong>Booking ID:</strong> ${params.booking_id || ""}</li>
+        <li><strong>Booking UID:</strong> ${params.booking_uid || ""}</li>
+        <li><strong>Vehicle ID:</strong> ${params.vehicle_id || ""}</li>
+        <li><strong>Simulation:</strong> ${params.simulation || ""}</li>
+      </ul>
+    `;
 
     const photoInput = document.getElementById("photoInput");
     const photoPreviewDiv = document.getElementById("photoPreview");
@@ -248,7 +234,6 @@
     const locationButton = document.getElementById("locationButton");
     const locationDisplay = document.getElementById("locationDisplay");
     let capturedLocation = null;
-    let isLocationWithinBounds = true;
 
     locationButton.addEventListener("click", function () {
       if (navigator.geolocation) {
@@ -287,41 +272,28 @@
       signaturePad.clear();
     });
 
-    document.getElementById("showPayloadBtn").addEventListener("click", function () {
-      const simulation_id = parseInt(params.simulation) || 19138;
-      const node_id = parseInt(params.node_id) || 2349069;
-      const node_uid = params.node_uid || "32b0ef45-6baa-44aa-8203-ce9312ab645b";
-      const node_type = params.node_type || "dropoff";
-      const booking_id = parseInt(params.booking_id) || 1122584;
-      const booking_uid = params.booking_uid || "efbbe0f6-a80c-520b-81fa-5f1621cfd90b";
-      const vehicle_id = parseInt(params.vehicle_id) || 182389;
-
-      const lat = capturedLocation?.latitude || 1.3;
-      const lon = capturedLocation?.longitude || 103.8;
-
-      const image_urls = selectedPhotos.map((file, index) => {
-        return `https://firebasestorage.googleapis.com/v0/b/your-bucket/o/sample_image_${index + 1}.jpg?alt=media`;
-      });
-
+    document.getElementById("submitButton").addEventListener("click", function () {
       const payload = {
         data: {
           status: "completed",
-          node_id,
-          node_uid,
-          node_type,
-          booking_id,
-          vehicle_id,
+          node_id: params.node_id || "",
+          node_uid: params.node_uid || "",
+          node_type: params.node_type || "",
+          booking_id: params.booking_id || "",
+          vehicle_id: params.vehicle_id || "",
           action_data: {
-            lat,
-            lon,
+            lat: capturedLocation?.latitude || "",
+            lon: capturedLocation?.longitude || "",
             data: {},
-            image_urls,
+            image_urls: selectedPhotos.map((file, index) =>
+              `https://firebasestorage.googleapis.com/v0/b/your-bucket/o/sample_image_${index + 1}.jpg?alt=media`
+            ),
             action_type: "proof_of_delivery",
             action_subtype: "photo"
           },
-          booking_uid
+          booking_uid: params.booking_uid || ""
         },
-        simulation_id,
+        simulation_id: params.simulation || "",
         current_sim_ts: new Date().toISOString()
       };
 
