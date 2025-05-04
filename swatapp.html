@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Delivery Capture</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    body {
+      font-family: "Poppins", sans-serif;
+      background-color: #f9f9f9;
+      color: #2c2c2c;
+      margin: 0;
+      padding: 0;
+    }
+    .container {
+      margin-top: 20px;
+      margin-bottom: 20px;
+      padding: 0 15px;
+    }
+    .card {
+      border: none;
+      border-radius: 20px;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.04);
+      background-color: #ffffff;
+      overflow: hidden;
+    }
+    .card-header {
+      background: linear-gradient(135deg, #ef6c41, #e25c32);
+      color: #ffffff;
+      text-align: center;
+      font-size: 1.6rem;
+      font-weight: 600;
+      padding: 1.2rem;
+      border-bottom: none;
+    }
+    h5 {
+      font-weight: 600;
+      font-size: 1.1rem;
+      margin-bottom: 0.75rem;
+    }
+    textarea,
+    input,
+    .form-control {
+      border-radius: 12px;
+      font-size: 1rem;
+      padding: 0.75rem;
+      border: 1px solid #ced4da;
+    }
+    .form-check-label {
+      font-size: 0.95rem;
+    }
+    .preview-img {
+      width: 90px;
+      height: 90px;
+      margin: 5px;
+      border-radius: 10px;
+      object-fit: cover;
+      border: 2px solid #ddd;
+    }
+    #signatureCanvas {
+      background-color: #fff;
+      border: 1px solid #ced4da;
+      border-radius: 12px;
+      width: 100%;
+      height: 220px;
+    }
+    button {
+      font-size: 1rem;
+      border-radius: 12px;
+    }
+    .btn-primary {
+      background-color: #ef6c41;
+      border-color: #ef6c41;
+    }
+    .btn-primary:hover {
+      background-color: #e25c32;
+      border-color: #e25c32;
+    }
+    .btn-success {
+      background-color: #28a745;
+      border-color: #28a745;
+    }
+    .btn-success:hover {
+      background-color: #218838;
+      border-color: #1e7e34;
+    }
+    .btn-secondary {
+      background-color: #6c757d;
+      border-color: #6c757d;
+    }
+    .btn-secondary:hover {
+      background-color: #5a6268;
+      border-color: #545b62;
+    }
+    .custom-file-upload {
+      background-color: #ef6c41;
+      color: white;
+      padding: 0.6rem 1.2rem;
+      border-radius: 10px;
+      cursor: pointer;
+      display: inline-block;
+      font-weight: 500;
+      border: none;
+      font-size: 0.95rem;
+    }
+    .custom-file-upload:hover {
+      background-color: #e25c32;
+    }
+    #photoInput {
+      display: none;
+    }
+    @media (max-width: 576px) {
+      h5 {
+        font-size: 1.05rem;
+      }
+      .card-header {
+        font-size: 1.4rem;
+      }
+      .form-check-label,
+      .btn,
+      textarea {
+        font-size: 0.95rem;
+      }
+      #signatureCanvas {
+        height: 180px;
+      }
+      .btn {
+        width: 100%;
+        margin-bottom: 0.5rem;
+      }
+      .text-center {
+        display: flex;
+        flex-direction: column;
+        align-items: stretch;
+      }
+    }
+  </style>
+  <script src="https://cdn.jsdelivr.net/npm/signature_pad@4.0.0/dist/signature_pad.umd.min.js"></script>
+</head>
+<body>
+  <div class="container">
+    <div class="card">
+      <div class="card-header">Delivery Capture</div>
+      <div class="card-body">
+        <div id="referralInfo" class="mb-3"></div>
+
+        <div class="mb-4">
+          <h5>Upload Photos (up to 3)</h5>
+          <label for="photoInput" class="custom-file-upload">Choose Files</label>
+          <input type="file" id="photoInput" accept="image/*" multiple />
+          <div id="photoPreview" class="d-flex flex-wrap mt-3"></div>
+        </div>
+
+        <div class="mb-4">
+          <h5>Your Location</h5>
+          <button id="locationButton" class="btn btn-primary mb-2">Get Location</button>
+          <p id="locationDisplay" class="form-control-plaintext">Location not captured yet.</p>
+        </div>
+
+        <div class="mb-4">
+          <h5>Add Notes</h5>
+          <textarea id="notesInput" class="form-control" rows="4" placeholder="Add any relevant notes here..."></textarea>
+        </div>
+
+        <div class="mb-4">
+          <h5>Signature</h5>
+          <div class="form-check mb-2">
+            <input class="form-check-input" type="checkbox" id="noSignatureCheckbox">
+            <label class="form-check-label" for="noSignatureCheckbox">
+              No Signature Required
+            </label>
+          </div>
+          <canvas id="signatureCanvas"></canvas>
+          <button id="clearSignature" class="btn btn-secondary btn-sm mt-2">Clear Signature</button>
+        </div>
+
+        <div class="text-center">
+          <button id="submitButton" class="btn btn-success">Complete</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal for Simulated Payload -->
+  <div class="modal fade" id="payloadModal" tabindex="-1" aria-labelledby="payloadModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-scrollable">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="payloadModalLabel">Simulated POST Payload</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <pre id="payloadContent" class="bg-light p-3 rounded border text-break small"></pre>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    function getQueryParams() {
+      let params = {};
+      let queryString = window.location.search.substring(1);
+      let regex = /([^&=]+)=([^&]*)/g;
+      let m;
+      while ((m = regex.exec(queryString))) {
+        params[decodeURIComponent(m[1])] = decodeURIComponent(m[2]);
+      }
+      return params;
+    }
+
+    const params = getQueryParams();
+    const referralInfoDiv = document.getElementById("referralInfo");
+    referralInfoDiv.innerHTML = `
+      <p><strong>Booking Information:</strong></p>
+      <ul class="list-unstyled">
+        <li><strong>Stop #:</strong> ${params.stop || ""}</li>
+        <li><strong>Node ID:</strong> ${params.node_id || ""}</li>
+        <li><strong>Node UID:</strong> ${params.node_uid || ""}</li>
+        <li><strong>Node Type:</strong> ${params.node_type || ""}</li>
+        <li><strong>Booking ID:</strong> ${params.booking_id || ""}</li>
+        <li><strong>Booking UID:</strong> ${params.booking_uid || ""}</li>
+        <li><strong>Vehicle ID:</strong> ${params.vehicle_id || ""}</li>
+        <li><strong>Simulation:</strong> ${params.simulation || ""}</li>
+      </ul>
+    `;
+
+    const photoInput = document.getElementById("photoInput");
+    const photoPreviewDiv = document.getElementById("photoPreview");
+    let selectedPhotos = [];
+
+    photoInput.addEventListener("change", function () {
+      const newFiles = Array.from(photoInput.files);
+      if (selectedPhotos.length + newFiles.length > 3) {
+        alert("You can upload up to 3 photos only.");
+        photoInput.value = "";
+        return;
+      }
+
+      selectedPhotos = selectedPhotos.concat(newFiles);
+      renderPhotoPreview();
+      photoInput.value = "";
+    });
+
+    function renderPhotoPreview() {
+      photoPreviewDiv.innerHTML = "";
+      selectedPhotos.forEach((file, index) => {
+        const reader = new FileReader();
+        reader.onload = function (e) {
+          const wrapper = document.createElement("div");
+          wrapper.className = "position-relative me-2 mb-2";
+
+          const img = document.createElement("img");
+          img.src = e.target.result;
+          img.className = "preview-img";
+
+          const delBtn = document.createElement("button");
+          delBtn.innerHTML = "&times;";
+          delBtn.className = "btn btn-sm btn-danger position-absolute top-0 end-0";
+          delBtn.style.transform = "translate(50%,-50%)";
+          delBtn.onclick = () => {
+            selectedPhotos.splice(index, 1);
+            renderPhotoPreview();
+          };
+
+          wrapper.appendChild(img);
+          wrapper.appendChild(delBtn);
+          photoPreviewDiv.appendChild(wrapper);
+        };
+        reader.readAsDataURL(file);
+      });
+    }
+
+    const locationButton = document.getElementById("locationButton");
+    const locationDisplay = document.getElementById("locationDisplay");
+    let capturedLocation = null;
+
+    locationButton.addEventListener("click", function () {
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+          function (position) {
+            capturedLocation = {
+              latitude: position.coords.latitude,
+              longitude: position.coords.longitude,
+            };
+            locationDisplay.innerText =
+              `Lat: ${capturedLocation.latitude.toFixed(5)}, Lon: ${capturedLocation.longitude.toFixed(5)}`;
+          },
+          function (error) {
+            alert("Error getting location: " + error.message);
+          }
+        );
+      } else {
+        alert("Geolocation is not supported by this browser.");
+      }
+    });
+
+    const canvas = document.getElementById("signatureCanvas");
+    const signaturePad = new SignaturePad(canvas);
+
+    function resizeCanvas() {
+      const ratio = Math.max(window.devicePixelRatio || 1, 1);
+      canvas.width = canvas.offsetWidth * ratio;
+      canvas.height = canvas.offsetHeight * ratio;
+      canvas.getContext("2d").scale(ratio, ratio);
+      signaturePad.clear();
+    }
+    window.addEventListener("resize", resizeCanvas);
+    resizeCanvas();
+
+    document.getElementById("clearSignature").addEventListener("click", function () {
+      signaturePad.clear();
+    });
+
+    document.getElementById("submitButton").addEventListener("click", function () {
+      const payload = {
+        data: {
+          status: "completed",
+          node_id: params.node_id || "",
+          node_uid: params.node_uid || "",
+          node_type: params.node_type || "",
+          booking_id: params.booking_id || "",
+          vehicle_id: params.vehicle_id || "",
+          action_data: {
+            lat: capturedLocation?.latitude || "",
+            lon: capturedLocation?.longitude || "",
+            data: {},
+            image_urls: selectedPhotos.map((file, index) =>
+              `https://firebasestorage.googleapis.com/v0/b/your-bucket/o/sample_image_${index + 1}.jpg?alt=media`
+            ),
+            action_type: "proof_of_delivery",
+            action_subtype: "photo"
+          },
+          booking_uid: params.booking_uid || ""
+        },
+        simulation_id: params.simulation || "",
+        current_sim_ts: new Date().toISOString()
+      };
+
+      document.getElementById("payloadContent").textContent = JSON.stringify(payload, null, 2);
+      const modal = new bootstrap.Modal(document.getElementById("payloadModal"));
+      modal.show();
+    });
+  </script>
+</body>
+</html>
