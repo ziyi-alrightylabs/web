@@ -80,16 +80,6 @@
       border-radius: 12px;
     }
 
-    .btn-primary {
-      background-color: #ef6c41;
-      border-color: #ef6c41;
-    }
-
-    .btn-primary:hover {
-      background-color: #e25c32;
-      border-color: #e25c32;
-    }
-
     .btn-success {
       background-color: #28a745;
       border-color: #28a745;
@@ -110,30 +100,29 @@
       border-color: #545b62;
     }
 
-    .custom-file-upload {
-  background-color: #ef6c41;
-  color: white;
-  padding: 0.6rem 1.2rem;
-  border-radius: 12px;
-  cursor: pointer;
-  font-weight: 500;
-  border: none;
-  font-size: 1rem;
-  display: inline-block;
-  text-align: center;
-  width: 100%;
-  max-width: 300px;
-}
-
-    .custom-file-upload:hover {
-      background-color: #e25c32;
+    .btn-block-standard {
+      display: inline-block;
+      background-color: #ef6c41;
+      color: white;
+      font-size: 1rem;
+      font-weight: 500;
+      padding: 0.6rem 1.2rem;
+      border: none;
+      border-radius: 12px;
+      text-align: center;
+      width: 180px;
+      max-width: 100%;
     }
-.button-wide {
-  width: 100%;
-  max-width: 300px;
-  display: block;
-  margin: 0 auto;
-}
+
+    .btn-block-standard:hover {
+      background-color: #e25c32;
+      color: white;
+    }
+
+    .custom-file-upload {
+      cursor: pointer;
+    }
+
     #photoInput {
       display: none;
     }
@@ -190,7 +179,7 @@
         <!-- Upload -->
         <div class="mb-4">
           <h5>Upload Photos (up to 3)</h5>
-          <label for="photoInput" class="custom-file-upload button-wide">Choose Files</label>
+          <label for="photoInput" class="btn-block-standard custom-file-upload">Choose Files</label>
           <input type="file" id="photoInput" accept="image/*" multiple />
           <div id="photoPreview" class="d-flex flex-wrap mt-3"></div>
         </div>
@@ -198,7 +187,7 @@
         <!-- Location -->
         <div class="mb-4">
           <h5>Current Location</h5>
-          <button id="locationButton" class="btn btn-primary button-wide mb-2">Get Location</button>
+          <button id="locationButton" class="btn-block-standard mb-2">Get Location</button>
           <p id="locationDisplay" class="form-control-plaintext">Location not captured yet.</p>
         </div>
 
