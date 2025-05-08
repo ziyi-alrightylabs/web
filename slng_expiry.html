@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SLNG Inspection Expiry Notice</title>
+  <link rel="icon" href="https://slng.com.sg/sites/default/files/favicon-%283%29.png" type="image/png">
+  <style>
+    html, body {
+      height: 100%;
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #f4f6f8;
+      color: #003366;
+      display: flex;
+      flex-direction: column;
+    }
+    body > .app-container {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+    .app-container {
+      width: 100%;
+      max-width: 480px;
+      margin: 0 auto;
+      background-color: #fff;
+      border-radius: 12px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+      overflow: hidden;
+    }
+    .header {
+      background-color: #e6f0f5;
+      padding: 16px;
+      color: #003366;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }
+    .header img {
+      height: 36px;
+    }
+    .header h1 {
+      font-size: 20px;
+      margin: 0;
+      flex: 1;
+      text-align: center;
+    }
+    .booking-details {
+      padding: 20px;
+      flex: 1;
+    }
+    .info {
+      background-color: #fff3cd;
+      padding: 12px 16px;
+      border-radius: 8px;
+      margin-bottom: 10px;
+      font-size: 16px;
+      color: #856404;
+      border: 1px solid #ffeeba;
+    }
+    .label {
+      font-weight: bold;
+    }
+    .status {
+      display: inline-block;
+      padding: 6px 16px;
+      background-color: #ffcc00;
+      color: #333;
+      border-radius: 20px;
+      font-size: 14px;
+      margin-bottom: 16px;
+    }
+    .actions {
+      display: flex;
+      justify-content: center;
+      padding: 0 20px 20px 20px;
+    }
+    .actions button {
+      padding: 12px 24px;
+      border: none;
+      border-radius: 8px;
+      font-weight: bold;
+      font-size: 16px;
+      cursor: pointer;
+      background-color: #003366;
+      color: #fff;
+    }
+    .footer {
+      background-color: #f4f6f8;
+      display: flex;
+      justify-content: space-around;
+      padding: 12px 0;
+      border-top: 1px solid #ddd;
+      flex-shrink: 0;
+    }
+    .footer i {
+      font-size: 22px;
+      color: #003366;
+    }
+  </style>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+</head>
+<body>
+  <div class="app-container">
+    <div class="header">
+      <img src="https://www.slng.com.sg/sites/default/files/SLNG-Logo-Colour.png" alt="SLNG Logo" />
+      <h1>Expiry Notice</h1>
+    </div>
+    <div class="booking-details">
+      <div class="status">Upcoming Expiry</div>
+      <div class="info"><span class="label">Vehicle:</span> V25-0012</div>
+      <div class="info"><span class="label">Chassis:</span> C25-0033</div>
+      <div class="info"><span class="label">ISO Tank:</span> T25-0091</div>
+      <div class="info"><span class="label">Current Approval Expiry:</span> <strong>24 May 2025</strong></div>
+      <div class="info"><span class="label">Action Required:</span> Please renew documents and schedule inspection before expiry.</div>
+    </div>
+    <div class="actions">
+      <button>Renew Now</button>
+    </div>
+    <div class="footer">
+      <i class="fas fa-home"></i>
+      <i class="fas fa-calendar-check"></i>
+      <i class="fas fa-bell"></i>
+      <i class="fas fa-user"></i>
+    </div>
+  </div>
+</body>
+</html>
