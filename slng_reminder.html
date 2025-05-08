@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SLNG Inspection Slot</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #f4f6f8;
+      margin: 0;
+      padding: 0;
+      color: #003366;
+    }
+    .app-container {
+      max-width: 400px;
+      margin: auto;
+      background-color: #fff;
+      border-radius: 12px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+      overflow: hidden;
+    }
+    .header {
+      background-color: #003366;
+      padding: 16px;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .header img {
+      height: 32px;
+    }
+    .header h1 {
+      font-size: 18px;
+      margin: 0;
+      flex: 1;
+      text-align: center;
+    }
+    .booking-details {
+      padding: 20px;
+    }
+    .booking-details h2 {
+      font-size: 16px;
+      margin-bottom: 8px;
+    }
+    .info {
+      background-color: #eef6f2;
+      padding: 10px 15px;
+      border-radius: 8px;
+      margin-bottom: 10px;
+    }
+    .label {
+      font-weight: bold;
+    }
+    .status {
+      display: inline-block;
+      padding: 6px 12px;
+      background-color: #009933;
+      color: #fff;
+      border-radius: 20px;
+      font-size: 12px;
+      margin-bottom: 12px;
+    }
+    .actions {
+      display: flex;
+      justify-content: space-between;
+      padding: 0 20px 20px 20px;
+    }
+    .actions button {
+      padding: 10px 20px;
+      border: none;
+      border-radius: 8px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    .reschedule {
+      background-color: #003366;
+      color: #fff;
+    }
+    .cancel {
+      background-color: #ccc;
+      color: #333;
+    }
+    .footer {
+      background-color: #f4f6f8;
+      display: flex;
+      justify-content: space-around;
+      padding: 10px 0;
+      border-top: 1px solid #ddd;
+    }
+    .footer i {
+      font-size: 20px;
+      color: #003366;
+    }
+  </style>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+</head>
+<body>
+  <div class="app-container">
+    <div class="header">
+      <img src="https://upload.wikimedia.org/wikipedia/commons/3/3b/SLNG_logo.png" alt="SLNG Logo" />
+      <h1>Inspection Slot</h1>
+    </div>
+    <div class="booking-details">
+      <div class="status">Confirmed</div>
+      <div class="info"><span class="label">Date:</span> 12 May 2025</div>
+      <div class="info"><span class="label">Time:</span> 09:15 AM</div>
+      <div class="info"><span class="label">Type:</span> Quarterly Inspection</div>
+      <div class="info"><span class="label">Bay:</span> Bay 1</div>
+      <div class="info"><span class="label">Prime Mover:</span> V25-0012</div>
+      <div class="info"><span class="label">Chassis:</span> C25-0033</div>
+      <div class="info"><span class="label">ISO Tank:</span> T25-0091</div>
+    </div>
+    <div class="actions">
+      <button class="reschedule">Reschedule</button>
+      <button class="cancel">Cancel</button>
+    </div>
+    <div class="footer">
+      <i class="fas fa-home"></i>
+      <i class="fas fa-calendar-check"></i>
+      <i class="fas fa-bell"></i>
+      <i class="fas fa-user"></i>
+    </div>
+  </div>
+</body>
+</html>
