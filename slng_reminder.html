@@ -4,14 +4,22 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>SLNG Inspection Slot</title>
-  <link rel="icon" href="/sites/default/files/favicon-%283%29.png" type="image/png">
+  <link rel="icon" href="https://slng.com.sg/sites/default/files/favicon-%283%29.png" type="image/png">
   <style>
-    body {
-      font-family: 'Segoe UI', sans-serif;
-      background-color: #f4f6f8;
+    html, body {
+      height: 100%;
       margin: 0;
       padding: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #f4f6f8;
       color: #003366;
+      display: flex;
+      flex-direction: column;
+    }
+    body > .app-container {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
     }
     .app-container {
       max-width: 400px;
@@ -28,51 +36,53 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
+      gap: 10px;
     }
     .header img {
-      height: 32px;
+      height: 36px;
     }
     .header h1 {
-      font-size: 18px;
+      font-size: 20px;
       margin: 0;
       flex: 1;
       text-align: center;
     }
     .booking-details {
       padding: 20px;
-    }
-    .booking-details h2 {
-      font-size: 16px;
-      margin-bottom: 8px;
+      flex: 1;
     }
     .info {
       background-color: #eef6f2;
-      padding: 10px 15px;
+      padding: 12px 16px;
       border-radius: 8px;
       margin-bottom: 10px;
+      font-size: 16px;
     }
     .label {
       font-weight: bold;
     }
     .status {
       display: inline-block;
-      padding: 6px 12px;
+      padding: 6px 16px;
       background-color: #009933;
       color: #fff;
       border-radius: 20px;
-      font-size: 12px;
-      margin-bottom: 12px;
+      font-size: 14px;
+      margin-bottom: 16px;
     }
     .actions {
       display: flex;
       justify-content: space-between;
+      gap: 12px;
       padding: 0 20px 20px 20px;
     }
     .actions button {
-      padding: 10px 20px;
+      flex: 1;
+      padding: 12px 0;
       border: none;
       border-radius: 8px;
       font-weight: bold;
+      font-size: 16px;
       cursor: pointer;
     }
     .reschedule {
@@ -87,22 +97,21 @@
       background-color: #f4f6f8;
       display: flex;
       justify-content: space-around;
-      padding: 10px 0;
+      padding: 12px 0;
       border-top: 1px solid #ddd;
+      flex-shrink: 0;
     }
     .footer i {
-      font-size: 20px;
+      font-size: 22px;
       color: #003366;
     }
   </style>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
-  <link rel="icon" href="https://slng.com.sg/sites/default/files/favicon-%283%29.png" type="image/png">
 </head>
 <body>
   <div class="app-container">
     <div class="header">
       <img src="https://www.slng.com.sg/sites/default/files/SLNG-Logo-Colour.png" alt="SLNG Logo" />
-      
       <h1>Inspection Slot</h1>
     </div>
     <div class="booking-details">
